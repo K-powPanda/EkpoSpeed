@@ -1510,32 +1510,31 @@
       const parent = document.getElementById('f-parent').value.trim();
       const emergency = document.getElementById('f-emergency').value.trim();
 
-      // SheetDB requires data as an array
-      const payload = {
-        data: [{
-          "Timestamp":          getTimestampCT(),
-          "Full Name":          name,
-          "Email":              email,
-          "Age":                age,
-          "Sports":             sports,
-          "Other Sport":        otherSport,
-          "Parent Name":        parent,
-          "Emergency Contact":  emergency,
-          "Injury History":     injury || "None",
-          "Cleared":            cleared,
-          "Training Type":      training,
-          "Experience":         experience,
-          "Goals":              goals,
-          "Availability":       availability,
-          "How Heard":          heard,
-          "Commitment":         commitment
-        }]
-      };
+      // Build row object — keys must match Google Sheet headers exactly
+      const row = {};
+      row["Timestamp"]         = getTimestampCT();
+      row["Full Name"]         = name;
+      row["Email"]             = email;
+      row["Age"]               = age;
+      row["Sports"]            = sports;
+      row["Other Sport"]       = otherSport || "";
+      row["Parent Name"]       = parent || "";
+      row["Emergency Contact"] = emergency || "";
+      row["Injury History"]    = injury || "None";
+      row["Cleared"]           = cleared;
+      row["Training Type"]     = training;
+      row["Experience"]        = experience;
+      row["Goals"]             = goals;
+      row["Availability"]      = availability;
+      row["How Heard"]         = heard;
+      row["Commitment"]        = commitment;
+
+      const payload = { data: [row] };
 
       try {
         const res = await fetch(SHEETDB_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload)
         });
 
