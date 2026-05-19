@@ -1510,8 +1510,9 @@
       const parent = document.getElementById('f-parent').value.trim();
       const emergency = document.getElementById('f-emergency').value.trim();
 
+      // SheetDB requires data as an array
       const payload = {
-        data: {
+        data: [{
           "Timestamp":          getTimestampCT(),
           "Full Name":          name,
           "Email":              email,
@@ -1520,7 +1521,7 @@
           "Other Sport":        otherSport,
           "Parent Name":        parent,
           "Emergency Contact":  emergency,
-          "Injury History":     injury || 'None',
+          "Injury History":     injury || "None",
           "Cleared":            cleared,
           "Training Type":      training,
           "Experience":         experience,
@@ -1528,34 +1529,41 @@
           "Availability":       availability,
           "How Heard":          heard,
           "Commitment":         commitment
-        }
+        }]
       };
 
       try {
         const res = await fetch(SHEETDB_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
           body: JSON.stringify(payload)
         });
-        if (!res.ok) throw new Error('Server error');
+
+        // Log response for debugging
+        const responseText = await res.text();
+        console.log("SheetDB status:", res.status);
+        console.log("SheetDB response:", responseText);
+
+        if (!res.ok) throw new Error("SheetDB error: " + res.status + " — " + responseText);
 
         // Success — fade out form, show success state
-        const form = document.getElementById('reg-form');
-        const success = document.getElementById('success-state');
-        form.style.opacity = '0';
-        form.style.transition = 'opacity 0.3s';
+        const form = document.getElementById("reg-form");
+        const success = document.getElementById("success-state");
+        form.style.opacity = "0";
+        form.style.transition = "opacity 0.3s";
         setTimeout(() => {
-          form.style.display = 'none';
-          success.style.display = 'block';
-          success.style.animation = 'fadeUp 0.5s ease both';
-          success.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          form.style.display = "none";
+          success.style.display = "block";
+          success.style.animation = "fadeUp 0.5s ease both";
+          success.scrollIntoView({ behavior: "smooth", block: "center" });
         }, 300);
 
       } catch (err) {
-        btn.textContent = 'Submit Registration →';
+        console.error("Submission error:", err);
+        btn.textContent = "Submit Registration →";
         btn.disabled = false;
-        btn.style.opacity = '1';
-        showError('Something went wrong. Please try again or DM @ekpospeed on Instagram.');
+        btn.style.opacity = "1";
+        showError("Something went wrong (" + err.message + "). Please DM @ekpospeed on Instagram.");
       }
     }
 
