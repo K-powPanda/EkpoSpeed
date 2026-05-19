@@ -1483,9 +1483,9 @@
       const heard = document.getElementById('f-heard').value;
       const commitment = document.getElementById('f-commitment').value;
 
-      if (!name) { showError('Please enter the athlete's full name.'); return; }
+      if (!name) { showError("Please enter the athlete's full name."); return; }
       if (!email || !email.includes('@')) { showError('Please enter a valid email address.'); return; }
-      if (!age) { showError('Please enter the athlete's age.'); return; }
+      if (!age) { showError("Please enter the athlete's age."); return; }
       if (!sports) { showError('Please select at least one sport.'); return; }
       if (!cleared) { showError('Please indicate clearance for physical activity.'); return; }
       if (!training) { showError('Please select a preferred training type.'); return; }
