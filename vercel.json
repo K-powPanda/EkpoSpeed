@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/send-confirmation.js": {
+      "runtime": "nodejs18.x"
+    }
+  }
+}

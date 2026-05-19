@@ -1078,7 +1078,6 @@
       .mobile-menu { display: none !important; }
     }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
 <body>
 
@@ -1600,7 +1599,7 @@
         </div>
       </div>
       <div class="footer-bottom">
-        <div class="footer-copy">© 2025 Ekpo Speed Performance · Fort Worth, TX · All rights reserved.</div>
+        <div class="footer-copy">ekpoperformance.com</div>
         <div class="footer-links">
           <a href="#about">About</a>
           <a href="#pricing">Pricing</a>
@@ -1668,11 +1667,6 @@
 
     // ── SheetDB submission
     const SHEETDB_URL = "https://sheetdb.io/api/v1/s1z88wtjbcsra";
-
-    // EMAILJS PUBLIC KEY — replace YOUR_PUBLIC_KEY
-    if (window.emailjs) {
-      emailjs.init("YOUR_PUBLIC_KEY");
-    }
 
     function getChecked(cls) {
       return Array.from(document.querySelectorAll('.' + cls + ':checked'))
@@ -1774,17 +1768,18 @@
 
         if (!res.ok) throw new Error("SheetDB error: " + res.status + " — " + responseText);
 
-        if (window.emailjs) {
-          emailjs.send(
-            // EMAILJS SERVICE ID — replace YOUR_SERVICE_ID
-            "YOUR_SERVICE_ID",
-            // EMAILJS TEMPLATE ID — replace YOUR_TEMPLATE_ID
-            "YOUR_TEMPLATE_ID",
-            {
-              to_email: email,
-              athlete_name: name
-            }
-          ).catch(emailErr => console.error("EmailJS error:", emailErr));
+        try {
+          await fetch('/api/send-confirmation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              athlete_name: name,
+              to_email: email
+            })
+          });
+        } catch (emailErr) {
+          console.error('Email send error:', emailErr);
+          // Silent fail — SheetDB submission already succeeded
         }
 
         // Success — fade out form, show success state
