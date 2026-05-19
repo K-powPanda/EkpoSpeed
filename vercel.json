@@ -1,12 +1,1 @@
-{
-  "functions": {
-    "api/send-confirmation.js": {
-      "runtime": "@vercel/node@5.0.0"
-    }
-  },
-  "build": {
-    "env": {
-      "NODE_VERSION": "22"
-    }
-  }
-}
+{}
