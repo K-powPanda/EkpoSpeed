@@ -81,6 +81,57 @@
     }
     .nav-cta:hover { background: var(--orange-bright) !important; color: var(--white) !important; }
 
+    .mobile-nav-toggle {
+      display: none;
+      background: transparent;
+      border: 1px solid rgba(255,94,0,0.35);
+      color: var(--orange);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 1.6rem;
+      line-height: 1;
+      width: 42px;
+      height: 38px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .mobile-nav-toggle:hover {
+      background: rgba(255,94,0,0.1);
+      border-color: var(--orange);
+    }
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      top: 67px;
+      left: 0;
+      right: 0;
+      z-index: 99;
+      background: rgba(8,8,8,0.97);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 20px 18px;
+    }
+    .mobile-menu.open { display: block; }
+    .mobile-menu a {
+      display: block;
+      color: var(--grey);
+      text-decoration: none;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 13px 0;
+      transition: color 0.2s;
+    }
+    .mobile-menu a:hover { color: var(--orange); }
+    .mobile-menu .nav-cta {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 11px 22px;
+      color: var(--white) !important;
+    }
+
     /* ── HERO ── */
     .hero {
       min-height: 100vh;
@@ -558,6 +609,66 @@
       margin-top: 1px;
     }
 
+    /* ── FAQ ── */
+    #faq {
+      background: var(--dark);
+      border-bottom: 1px solid var(--border);
+    }
+    .faq-header {
+      max-width: 640px;
+      margin-bottom: 42px;
+    }
+    .faq-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .faq-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .faq-question {
+      width: 100%;
+      background: transparent;
+      border: none;
+      color: var(--white);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 22px 24px;
+      text-align: left;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1.15rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: color 0.2s, background 0.2s;
+    }
+    .faq-question:hover { color: var(--orange); background: rgba(255,94,0,0.04); }
+    .faq-icon {
+      color: var(--orange);
+      font-size: 1.3rem;
+      line-height: 1;
+      flex-shrink: 0;
+      transition: transform 0.2s;
+    }
+    .faq-item.open .faq-icon { transform: rotate(45deg); }
+    .faq-answer {
+      display: none;
+      color: var(--grey);
+      font-size: 1rem;
+      line-height: 1.75;
+      padding: 0 24px 24px;
+    }
+    .faq-item.open {
+      border-color: rgba(255,94,0,0.28);
+    }
+    .faq-item.open .faq-answer { display: block; }
+
     /* ── COACH ── */
     #coach {
       background: var(--black);
@@ -953,6 +1064,7 @@
     /* ── MOBILE ── */
     @media (max-width: 768px) {
       nav ul { display: none; }
+      .mobile-nav-toggle { display: flex; align-items: center; justify-content: center; }
       .about-grid, .coach-grid { grid-template-columns: 1fr; gap: 40px; }
       .gains-grid { grid-template-columns: 1fr; }
       .pricing-grid { grid-template-columns: 1fr; }
@@ -962,7 +1074,11 @@
       .hero-stats { gap: 24px; }
       nav { padding: 14px 20px; }
     }
+    @media (min-width: 769px) {
+      .mobile-menu { display: none !important; }
+    }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 </head>
 <body>
 
@@ -973,10 +1089,20 @@
       <li><a href="#about">About</a></li>
       <li><a href="#gains">Training</a></li>
       <li><a href="#pricing">Pricing</a></li>
+      <li><a href="#faq">FAQ</a></li>
       <li><a href="#coach">Coach</a></li>
       <li><a href="#register" class="nav-cta">Register Now</a></li>
     </ul>
+    <button class="mobile-nav-toggle" type="button" aria-label="Open navigation" aria-expanded="false">☰</button>
   </nav>
+  <div class="mobile-menu" id="mobile-menu">
+    <a href="#about">About</a>
+    <a href="#gains">Training</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#faq">FAQ</a>
+    <a href="#coach">Coach</a>
+    <a href="#register" class="nav-cta">Register Now</a>
+  </div>
 
   <!-- HERO -->
   <section class="hero">
@@ -1193,6 +1319,61 @@
             <li>Full summer progression</li>
             <li>Priority scheduling & access</li>
           </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq">
+    <div class="container">
+      <div class="faq-header reveal">
+        <div class="section-label">FAQ</div>
+        <h2 class="section-title">Before You <span style="color:var(--orange)">Register.</span></h2>
+        <div class="divider"></div>
+      </div>
+      <div class="faq-list reveal">
+        <div class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span>What do athletes need to bring?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">Running shoes, water, and your best effort. That's it. Everything else is provided.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span>What age groups do you train?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">Middle school and high school athletes. Typically ages 11–18. If you're unsure, submit the registration form and Coach Ekpo will confirm eligibility.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span>How does payment work?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">After you submit the registration form, Coach Ekpo will reach out with payment details. Payment is due before your first session via Cash App ($MicahEkpo39) or Venmo (@MicahEkpo_39). Packages require upfront payment.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span>Is there a trial session?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">Spots are limited and fill quickly. Reach out via Instagram @ekpospeed if you have questions before registering.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span>What's the difference between group and 1-on-1 training?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">Group sessions (3–10 athletes) run Monday, Thursday, and Saturday and focus on structured speed work, sprint mechanics, and competitive drills. 1-on-1 sessions are private, fully personalized, and scheduled Tuesday and Friday. Both are coached by Coach Ekpo.</div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-question" type="button" aria-expanded="false">
+            <span>What if my athlete has an injury?</span>
+            <span class="faq-icon">+</span>
+          </button>
+          <div class="faq-answer">Disclose all injuries and health history on the registration form. Cleared-with-restrictions athletes are welcome — Coach Ekpo will adjust the program accordingly. Athletes must be cleared for physical activity before attending.</div>
         </div>
       </div>
     </div>
@@ -1442,8 +1623,56 @@
     }, { threshold: 0.1 });
     reveals.forEach(el => observer.observe(el));
 
+    // ── Mobile navigation
+    const mobileNavToggle = document.querySelector('.mobile-nav-toggle');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    function closeMobileMenu() {
+      mobileMenu.classList.remove('open');
+      mobileNavToggle.setAttribute('aria-expanded', 'false');
+    }
+
+    mobileNavToggle.addEventListener('click', (event) => {
+      event.stopPropagation();
+      const isOpen = mobileMenu.classList.toggle('open');
+      mobileNavToggle.setAttribute('aria-expanded', String(isOpen));
+    });
+
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', closeMobileMenu);
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!mobileMenu.classList.contains('open')) return;
+      if (mobileMenu.contains(event.target) || mobileNavToggle.contains(event.target)) return;
+      closeMobileMenu();
+    });
+
+    // ── FAQ accordion
+    document.querySelectorAll('.faq-question').forEach(button => {
+      button.addEventListener('click', () => {
+        const item = button.closest('.faq-item');
+        const isOpen = item.classList.contains('open');
+
+        document.querySelectorAll('.faq-item').forEach(faqItem => {
+          faqItem.classList.remove('open');
+          faqItem.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+        });
+
+        if (!isOpen) {
+          item.classList.add('open');
+          button.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+
     // ── SheetDB submission
     const SHEETDB_URL = "https://sheetdb.io/api/v1/s1z88wtjbcsra";
+
+    // EMAILJS PUBLIC KEY — replace YOUR_PUBLIC_KEY
+    if (window.emailjs) {
+      emailjs.init("YOUR_PUBLIC_KEY");
+    }
 
     function getChecked(cls) {
       return Array.from(document.querySelectorAll('.' + cls + ':checked'))
@@ -1544,6 +1773,19 @@
         console.log("SheetDB response:", responseText);
 
         if (!res.ok) throw new Error("SheetDB error: " + res.status + " — " + responseText);
+
+        if (window.emailjs) {
+          emailjs.send(
+            // EMAILJS SERVICE ID — replace YOUR_SERVICE_ID
+            "YOUR_SERVICE_ID",
+            // EMAILJS TEMPLATE ID — replace YOUR_TEMPLATE_ID
+            "YOUR_TEMPLATE_ID",
+            {
+              to_email: email,
+              athlete_name: name
+            }
+          ).catch(emailErr => console.error("EmailJS error:", emailErr));
+        }
 
         // Success — fade out form, show success state
         const form = document.getElementById("reg-form");
