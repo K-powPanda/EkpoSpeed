@@ -1,5 +1,1 @@
-{
-  "routes": [
-    { "src": "/success", "dest": "/success.html" }
-  ]
-}
+{}

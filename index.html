@@ -1117,6 +1117,19 @@
     <a href="#register" class="nav-cta">Register Now</a>
   </div>
 
+  <div id="countdown-banner" style="background:#FF5E00;
+     padding:12px 20px;text-align:center;position:relative;
+     z-index:999;">
+  <p style="margin:0;font-family:'Barlow Condensed',sans-serif;
+            font-size:16px;font-weight:700;letter-spacing:0.08em;
+            text-transform:uppercase;color:#ffffff;">
+    ⚡ Register Today for 3 FREE Group Sessions — Deal Closes In:
+    <span id="countdown-timer" style="color:#FFB800;">
+      Loading...
+    </span>
+  </p>
+</div>
+
   <!-- HERO -->
   <section class="hero">
     <div class="speed-lines"></div>
@@ -1535,11 +1548,11 @@
           <div class="form-group full">
             <label>Availability <span class="req">*</span></label>
             <div class="checkbox-group">
-              <label><input type="checkbox" value="Monday" class="cb-avail"> Monday (6:00–7:15 PM Group)</label>
-              <label><input type="checkbox" value="Tuesday" class="cb-avail"> Tuesday (5:00–8:00 PM 1-on-1)</label>
-              <label><input type="checkbox" value="Thursday" class="cb-avail"> Thursday (6:00–7:15 PM Group)</label>
-              <label><input type="checkbox" value="Friday" class="cb-avail"> Friday (5:00–7:30 PM 1-on-1)</label>
-              <label><input type="checkbox" value="Saturday" class="cb-avail"> Saturday (9:00–11:00 AM Group)</label>
+              <label data-training-type="group"><input type="checkbox" value="Monday" class="cb-avail"> Monday (6:00–7:15 PM Group)</label>
+              <label data-training-type="private"><input type="checkbox" value="Tuesday" class="cb-avail"> Tuesday (5:00–8:00 PM 1-on-1)</label>
+              <label data-training-type="group"><input type="checkbox" value="Thursday" class="cb-avail"> Thursday (6:00–7:15 PM Group)</label>
+              <label data-training-type="private"><input type="checkbox" value="Friday" class="cb-avail"> Friday (5:00–7:30 PM 1-on-1)</label>
+              <label data-training-type="group"><input type="checkbox" value="Saturday" class="cb-avail"> Saturday (9:00–11:00 AM Group)</label>
             </div>
           </div>
 
@@ -1627,6 +1640,30 @@
   </footer>
 
   <script>
+    (function() {
+      const deadline = new Date('2026-06-05T12:00:00-05:00');
+      function updateCountdown() {
+        const now = new Date();
+        const diff = deadline - now;
+        if (diff <= 0) {
+          document.getElementById('countdown-banner').style.display
+            = 'none';
+          return;
+        }
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24))
+          / (1000 * 60 * 60));
+        const mins = Math.floor((diff % (1000 * 60 * 60))
+          / (1000 * 60));
+        const secs = Math.floor((diff % (1000 * 60)) / 1000);
+        const el = document.getElementById('countdown-timer');
+        if (el) el.textContent =
+          days + 'd ' + hours + 'h ' + mins + 'm ' + secs + 's';
+      }
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    })();
+
     // ── Scroll reveal
     const reveals = document.querySelectorAll('.reveal');
     const observer = new IntersectionObserver((entries) => {
@@ -1709,6 +1746,28 @@
       el.textContent = msg;
     }
 
+    const trainingTypeSelect = document.getElementById('f-training');
+    const availabilityOptions = document.querySelectorAll('[data-training-type]');
+
+    function updateAvailabilityOptions() {
+      const trainingType = trainingTypeSelect.value;
+      availabilityOptions.forEach(option => {
+        const shouldShow =
+          !trainingType ||
+          trainingType === "Either (flexible)" ||
+          (trainingType === "1-on-1 Private Sessions" && option.dataset.trainingType === "private") ||
+          (trainingType === "Small Group Training" && option.dataset.trainingType === "group");
+        option.style.display = shouldShow ? "" : "none";
+        if (!shouldShow) {
+          const checkbox = option.querySelector('input');
+          if (checkbox) checkbox.checked = false;
+        }
+      });
+    }
+
+    trainingTypeSelect.addEventListener('change', updateAvailabilityOptions);
+    updateAvailabilityOptions();
+
     async function handleSubmit() {
       // Required field validation
       const name = document.getElementById('f-name').value.trim();
@@ -1768,12 +1827,21 @@
       row["Availability"]      = availability;
       row["How Heard"]         = heard;
       row["Commitment"]        = commitment;
+      row["Registration Type"] =
+        (training === "Small Group Training" ||
+         training === "Either (flexible)")
+        ? "Free Session" : "Paid Package";
+      row["Payment Status"] =
+        (training === "Small Group Training" ||
+         training === "Either (flexible)")
+        ? "Pending Payment" : "Awaiting Payment";
 
       const payload = { data: [row] };
 
       window._espName = name;
       window._espEmail = email;
       window._espAvailability = availability;
+      window._espTrainingType = training;
 
       try {
         const res = await fetch(SHEETDB_URL, {
@@ -1789,7 +1857,8 @@
 
         if (!res.ok) throw new Error("SheetDB error: " + res.status + " — " + responseText);
 
-        try {
+        if (training === "1-on-1 Private Sessions") {
+          try {
           await fetch('/api/send-confirmation', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1798,20 +1867,95 @@
               to_email: email
             })
           });
-        } catch (emailErr) {
+          } catch (emailErr) {
           console.error('Email send error:', emailErr);
           // Silent fail — SheetDB submission already succeeded
+          }
         }
 
         // Success — fade out form, show package picker
         const form = document.getElementById("reg-form");
         const register = document.getElementById("register");
         const oldSuccess = document.getElementById("success-state");
+        const isFreeSession =
+          training === "Small Group Training" ||
+          training === "Either (flexible)";
         form.style.opacity = "0";
         form.style.transition = "opacity 0.3s";
-        setTimeout(() => {
+        setTimeout(async () => {
           form.style.display = "none";
           if (oldSuccess) oldSuccess.style.display = "none";
+          if (isFreeSession) {
+            register.insertAdjacentHTML('beforeend', `
+  <div id="free-session-screen" style="text-align:center;
+       padding:40px 20px;max-width:600px;margin:0 auto;">
+    <h2 style="font-family:'Barlow Condensed',sans-serif;
+               font-size:36px;font-weight:900;
+               text-transform:uppercase;color:#ffffff;
+               margin-bottom:8px;">
+      You're In! ⚡
+    </h2>
+    <p style="color:#AAAAAA;font-size:15px;margin-bottom:24px;">
+      You've been registered for 3 FREE group sessions.
+      Coach Ekpo will be in touch with your schedule details.
+    </p>
+    <div style="background:#181818;border:1px solid
+                rgba(255,255,255,0.07);border-radius:6px;
+                padding:24px 28px;margin-bottom:24px;
+                text-align:left;">
+      <p style="margin:0 0 12px;font-size:11px;font-weight:700;
+                letter-spacing:0.15em;text-transform:uppercase;
+                color:#FFB800;">📍 What to Bring</p>
+      <p style="margin:0;font-size:14px;color:#AAAAAA;
+                line-height:1.8;">
+        ✓ Running shoes<br>
+        ✓ Water<br>
+        ✓ Your best effort
+      </p>
+    </div>
+    <div style="background:#181818;border:1px solid
+                rgba(255,94,0,0.3);border-radius:6px;
+                padding:24px 28px;margin-bottom:32px;
+                text-align:left;">
+      <p style="margin:0 0 8px;font-size:13px;font-weight:700;
+                letter-spacing:0.1em;text-transform:uppercase;
+                color:#FF5E00;">Ready to commit?</p>
+      <p style="margin:0 0 16px;font-size:14px;color:#AAAAAA;">
+        Lock in your premium training package and get priority
+        scheduling, personalized coaching, and full summer access.
+      </p>
+      <a href="/#pricing"
+         style="display:inline-block;background:#FF5E00;
+                color:#ffffff;font-size:13px;font-weight:700;
+                letter-spacing:0.1em;text-transform:uppercase;
+                text-decoration:none;padding:12px 28px;
+                border-radius:4px;">
+        Get Your Premium Package →
+      </a>
+    </div>
+    <a href="https://www.instagram.com/ekpospeed/"
+       style="display:inline-block;border:1px solid
+              rgba(255,255,255,0.15);color:#AAAAAA;
+              font-size:13px;text-decoration:none;
+              padding:12px 28px;border-radius:4px;">
+      Follow @ekpospeed on Instagram
+    </a>
+  </div>
+            `);
+            document.getElementById("free-session-screen").scrollIntoView({ behavior: "smooth", block: "center" });
+            try {
+              await fetch('/api/send-free-session-confirmation', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  athlete_name: window._espName || '',
+                  to_email: window._espEmail || ''
+                })
+              });
+            } catch (emailErr) {
+              console.error('Free session email error:', emailErr);
+            }
+          } else {
           register.insertAdjacentHTML('beforeend', `
             <div id="package-picker" style="text-align:center;padding:40px 20px;max-width:600px;margin:0 auto;">
               <h2 style="font-family:'Barlow Condensed',sans-serif;
@@ -1877,6 +2021,7 @@
             </div>
           `);
           document.getElementById("package-picker").scrollIntoView({ behavior: "smooth", block: "center" });
+          }
         }, 300);
 
       } catch (err) {
