@@ -1583,7 +1583,7 @@
 
           <div class="form-submit-row">
             <button class="submit-btn" onclick="handleSubmit()">Submit Registration →</button>
-            <p class="submit-note">After submitting, Coach Ekpo will reach out with payment info and scheduling details. Cash App: $MicahEkpo39 · Venmo: @MicahEkpo_39</p>
+            <p class="submit-note">Only small group is eligible for 3 free sessions until 06/06/26. You will receive a confirmation email upon payment and registering. DM @ekpospeed on IG for other payment options/questions.</p>
           </div>
         </div>
       </div>
@@ -1973,21 +1973,21 @@
                 Select your training package to complete registration.
               </p>
               <div style="display:grid;gap:12px;">
-                <button onclick="checkout('drop-in-1on1')"
+                <button data-package-type="private" onclick="checkout('drop-in-1on1')"
                         style="background:#181818;border:1px solid rgba(255,255,255,0.1);
                                color:#fff;padding:18px 24px;border-radius:6px;
                                cursor:pointer;text-align:left;font-family:'Barlow',sans-serif;width:100%;">
                   <div style="font-weight:700;font-size:15px;">Drop-in Session — 1-on-1</div>
                   <div style="color:#FF5E00;font-weight:700;margin-top:4px;">$75</div>
                 </button>
-                <button onclick="checkout('drop-in-group')"
+                <button data-package-type="group" onclick="checkout('drop-in-group')"
                         style="background:#181818;border:1px solid rgba(255,255,255,0.1);
                                color:#fff;padding:18px 24px;border-radius:6px;
                                cursor:pointer;text-align:left;font-family:'Barlow',sans-serif;width:100%;">
                   <div style="font-weight:700;font-size:15px;">Drop-in Session — Small Group</div>
                   <div style="color:#FF5E00;font-weight:700;margin-top:4px;">$35</div>
                 </button>
-                <button onclick="checkout('2month-1on1')"
+                <button data-package-type="private" onclick="checkout('2month-1on1')"
                         style="background:#181818;border:1px solid rgba(255,94,0,0.3);
                                color:#fff;padding:18px 24px;border-radius:6px;
                                cursor:pointer;text-align:left;font-family:'Barlow',sans-serif;width:100%;">
@@ -1998,14 +1998,18 @@
                   </div>
                   <div style="color:#FF5E00;font-weight:700;margin-top:4px;">$520</div>
                 </button>
-                <button onclick="checkout('2month-group')"
+                <button data-package-type="group" onclick="checkout('2month-group')"
                         style="background:#181818;border:1px solid rgba(255,255,255,0.1);
                                color:#fff;padding:18px 24px;border-radius:6px;
                                cursor:pointer;text-align:left;font-family:'Barlow',sans-serif;width:100%;">
-                  <div style="font-weight:700;font-size:15px;">2-Month Package — Small Group</div>
+                  <div style="font-weight:700;font-size:15px;">2-Month Package — Small Group
+                    <span style="background:#FF5E00;color:#fff;font-size:10px;
+                                 padding:2px 8px;border-radius:3px;margin-left:8px;
+                                 vertical-align:middle;">POPULAR</span>
+                  </div>
                   <div style="color:#FF5E00;font-weight:700;margin-top:4px;">$260</div>
                 </button>
-                <button onclick="checkout('summer-1on1')"
+                <button data-package-type="private" onclick="checkout('summer-1on1')"
                         style="background:#181818;border:1px solid rgba(255,184,0,0.3);
                                color:#fff;padding:18px 24px;border-radius:6px;
                                cursor:pointer;text-align:left;font-family:'Barlow',sans-serif;width:100%;">
@@ -2016,16 +2020,21 @@
                   </div>
                   <div style="color:#FF5E00;font-weight:700;margin-top:4px;">$1,050</div>
                 </button>
-                <button onclick="checkout('summer-group')"
+                <button data-package-type="group" onclick="checkout('summer-group')"
                         style="background:#181818;border:1px solid rgba(255,255,255,0.1);
                                color:#fff;padding:18px 24px;border-radius:6px;
                                cursor:pointer;text-align:left;font-family:'Barlow',sans-serif;width:100%;">
-                  <div style="font-weight:700;font-size:15px;">Full Summer — Small Group</div>
+                  <div style="font-weight:700;font-size:15px;">Full Summer — Small Group
+                    <span style="background:#FFB800;color:#000;font-size:10px;
+                                 padding:2px 8px;border-radius:3px;margin-left:8px;
+                                 vertical-align:middle;">BEST VALUE</span>
+                  </div>
                   <div style="color:#FF5E00;font-weight:700;margin-top:4px;">$550</div>
                 </button>
               </div>
             </div>
           `);
+          filterPackagePicker(false);
           document.getElementById("package-picker").scrollIntoView({ behavior: "smooth", block: "center" });
           }
         }, 300);
@@ -2068,6 +2077,19 @@
       }
     }
 
+    function filterPackagePicker(showBackButton) {
+      const trainingType = (window._espTrainingType || '').trim();
+      const showPrivate = trainingType === "1-on-1 Private Sessions";
+      const packageType = showPrivate ? 'private' : 'group';
+
+      document.querySelectorAll('#package-picker [data-package-type]').forEach(button => {
+        button.style.display = button.dataset.packageType === packageType ? '' : 'none';
+      });
+
+      const backButton = document.querySelector('#package-picker [data-package-back]');
+      if (backButton) backButton.style.display = showBackButton ? '' : 'none';
+    }
+
     function showPackagePicker() {
       const freeScreen = document.getElementById('free-session-screen');
       if (freeScreen) freeScreen.style.display = 'none';
@@ -2078,6 +2100,7 @@
       const existing = document.getElementById('package-picker');
       if (existing) {
         existing.style.display = 'block';
+        filterPackagePicker(true);
         return;
       }
 
@@ -2093,7 +2116,7 @@
       Select your training package to complete registration.
     </p>
     <div style="display:grid;gap:12px;">
-      <button onclick="checkout('drop-in-1on1')"
+      <button data-package-type="private" onclick="checkout('drop-in-1on1')"
               style="background:#181818;border:1px solid
                      rgba(255,255,255,0.1);color:#fff;
                      padding:18px 24px;border-radius:6px;
@@ -2104,7 +2127,7 @@
         <div style="color:#FF5E00;font-weight:700;
                     margin-top:4px;">$75</div>
       </button>
-      <button onclick="checkout('drop-in-group')"
+      <button data-package-type="group" onclick="checkout('drop-in-group')"
               style="background:#181818;border:1px solid
                      rgba(255,255,255,0.1);color:#fff;
                      padding:18px 24px;border-radius:6px;
@@ -2115,7 +2138,7 @@
         <div style="color:#FF5E00;font-weight:700;
                     margin-top:4px;">$35</div>
       </button>
-      <button onclick="checkout('2month-1on1')"
+      <button data-package-type="private" onclick="checkout('2month-1on1')"
               style="background:#181818;border:1px solid
                      rgba(255,94,0,0.3);color:#fff;
                      padding:18px 24px;border-radius:6px;
@@ -2131,18 +2154,22 @@
         <div style="color:#FF5E00;font-weight:700;
                     margin-top:4px;">$520</div>
       </button>
-      <button onclick="checkout('2month-group')"
+      <button data-package-type="group" onclick="checkout('2month-group')"
               style="background:#181818;border:1px solid
                      rgba(255,255,255,0.1);color:#fff;
                      padding:18px 24px;border-radius:6px;
                      cursor:pointer;text-align:left;
                      font-family:'Barlow',sans-serif;width:100%;">
         <div style="font-weight:700;font-size:15px;">
-          2-Month Package — Small Group</div>
+          2-Month Package — Small Group
+          <span style="background:#FF5E00;color:#fff;font-size:10px;
+                       padding:2px 8px;border-radius:3px;margin-left:8px;
+                       vertical-align:middle;">POPULAR</span>
+        </div>
         <div style="color:#FF5E00;font-weight:700;
                     margin-top:4px;">$260</div>
       </button>
-      <button onclick="checkout('summer-1on1')"
+      <button data-package-type="private" onclick="checkout('summer-1on1')"
               style="background:#181818;border:1px solid
                      rgba(255,184,0,0.3);color:#fff;
                      padding:18px 24px;border-radius:6px;
@@ -2158,18 +2185,22 @@
         <div style="color:#FF5E00;font-weight:700;
                     margin-top:4px;">$1,050</div>
       </button>
-      <button onclick="checkout('summer-group')"
+      <button data-package-type="group" onclick="checkout('summer-group')"
               style="background:#181818;border:1px solid
                      rgba(255,255,255,0.1);color:#fff;
                      padding:18px 24px;border-radius:6px;
                      cursor:pointer;text-align:left;
                      font-family:'Barlow',sans-serif;width:100%;">
         <div style="font-weight:700;font-size:15px;">
-          Full Summer — Small Group</div>
+          Full Summer — Small Group
+          <span style="background:#FFB800;color:#000;font-size:10px;
+                       padding:2px 8px;border-radius:3px;margin-left:8px;
+                       vertical-align:middle;">BEST VALUE</span>
+        </div>
         <div style="color:#FF5E00;font-weight:700;
                     margin-top:4px;">$550</div>
       </button>
-      <button onclick="backToFreeScreen()"
+      <button data-package-back="true" onclick="backToFreeScreen()"
               style="background:transparent;border:1px solid
                      rgba(255,255,255,0.15);color:#AAAAAA;
                      padding:14px 24px;border-radius:6px;
@@ -2180,6 +2211,7 @@
     </div>
   `;
       container.appendChild(picker);
+      filterPackagePicker(true);
     }
 
     function backToFreeScreen() {
