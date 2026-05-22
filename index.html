@@ -1549,13 +1549,13 @@
             <label>Availability <span class="req">*</span></label>
             <div class="checkbox-group">
               <label data-training-type="group"><input type="checkbox" value="Monday" class="cb-avail"> Monday (6:00–7:15 PM Group)</label>
-              <label data-training-type="private"><input type="checkbox" value="Tuesday (5:00–6:00 PM 1-on-1)" class="cb-avail"> Tuesday (5:00–6:00 PM 1-on-1)</label>
-              <label data-training-type="private"><input type="checkbox" value="Tuesday (6:00–7:00 PM 1-on-1)" class="cb-avail"> Tuesday (6:00–7:00 PM 1-on-1)</label>
-              <label data-training-type="private"><input type="checkbox" value="Tuesday (7:00–8:00 PM 1-on-1)" class="cb-avail"> Tuesday (7:00–8:00 PM 1-on-1)</label>
+              <label data-training-type="private"><input type="checkbox" id="avail-tue-5" value="Tuesday (5:00–6:00 PM 1-on-1)" class="cb-avail"> Tuesday (5:00–6:00 PM 1-on-1)</label>
+              <label data-training-type="private"><input type="checkbox" id="avail-tue-6" value="Tuesday (6:00–7:00 PM 1-on-1)" class="cb-avail"> Tuesday (6:00–7:00 PM 1-on-1)</label>
+              <label data-training-type="private"><input type="checkbox" id="avail-tue-7" value="Tuesday (7:00–8:00 PM 1-on-1)" class="cb-avail"> Tuesday (7:00–8:00 PM 1-on-1)</label>
               <label data-training-type="group"><input type="checkbox" value="Thursday" class="cb-avail"> Thursday (6:00–7:15 PM Group)</label>
-              <label data-training-type="private"><input type="checkbox" value="Friday (5:00–6:00 PM 1-on-1)" class="cb-avail"> Friday (5:00–6:00 PM 1-on-1)</label>
-              <label data-training-type="private"><input type="checkbox" value="Friday (6:00–7:00 PM 1-on-1)" class="cb-avail"> Friday (6:00–7:00 PM 1-on-1)</label>
-              <label data-training-type="private"><input type="checkbox" value="Friday (7:00–8:00 PM 1-on-1)" class="cb-avail"> Friday (7:00–8:00 PM 1-on-1)</label>
+              <label data-training-type="private"><input type="checkbox" id="avail-fri-5" value="Friday (5:00–6:00 PM 1-on-1)" class="cb-avail"> Friday (5:00–6:00 PM 1-on-1)</label>
+              <label data-training-type="private"><input type="checkbox" id="avail-fri-6" value="Friday (6:00–7:00 PM 1-on-1)" class="cb-avail"> Friday (6:00–7:00 PM 1-on-1)</label>
+              <label data-training-type="private"><input type="checkbox" id="avail-fri-7" value="Friday (7:00–8:00 PM 1-on-1)" class="cb-avail"> Friday (7:00–8:00 PM 1-on-1)</label>
               <label data-training-type="group"><input type="checkbox" value="Saturday (9:00–10:00 AM Group)" class="cb-avail"> Saturday (9:00–10:00 AM Group)</label>
               <label data-training-type="group"><input type="checkbox" value="Saturday (10:00–11:00 AM Group)" class="cb-avail"> Saturday (10:00–11:00 AM Group)</label>
             </div>
@@ -1768,10 +1768,61 @@
           if (checkbox) checkbox.checked = false;
         }
       });
+      if (trainingType === "1-on-1 Private Sessions") {
+        checkSlotAvailability();
+      }
+    }
+
+    async function checkSlotAvailability() {
+      try {
+        const res = await fetch('/api/get-slot-availability');
+        const data = await res.json();
+        if (!data.slots) return;
+
+        const slotMap = {
+          'Tuesday (5:00–6:00 PM 1-on-1)':  'avail-tue-5',
+          'Tuesday (6:00–7:00 PM 1-on-1)':  'avail-tue-6',
+          'Tuesday (7:00–8:00 PM 1-on-1)':  'avail-tue-7',
+          'Friday (5:00–6:00 PM 1-on-1)':   'avail-fri-5',
+          'Friday (6:00–7:00 PM 1-on-1)':   'avail-fri-6',
+          'Friday (7:00–8:00 PM 1-on-1)':   'avail-fri-7',
+        };
+
+        for (const [slotName, checkboxId] of Object.entries(slotMap)) {
+          const count = data.slots[slotName] || 0;
+          const checkbox = document.getElementById(checkboxId);
+          if (!checkbox) continue;
+          const label = checkbox.closest('label') ||
+                        checkbox.parentElement;
+
+          if (count >= 1) {
+            checkbox.disabled = true;
+            checkbox.checked = false;
+            if (label) {
+              label.style.opacity = '0.5';
+              label.style.textDecoration = 'line-through';
+              if (!label.innerHTML.includes('FULL')) {
+                label.innerHTML +=
+                  ' <span style="color:#FF5E00;font-size:11px;' +
+                  'text-decoration:none;font-weight:700;">FULL</span>';
+              }
+            }
+          } else {
+            checkbox.disabled = false;
+            if (label) {
+              label.style.opacity = '1';
+              label.style.textDecoration = 'none';
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Availability check error:', err);
+      }
     }
 
     trainingTypeSelect.addEventListener('change', updateAvailabilityOptions);
     updateAvailabilityOptions();
+    document.addEventListener('DOMContentLoaded', checkSlotAvailability);
 
     function isFreeSessionTraining(trainingType) {
       const normalized = (trainingType || '').trim();
