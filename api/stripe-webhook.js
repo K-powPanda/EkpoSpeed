@@ -161,6 +161,32 @@ export default async function handler(req, res) {
           </html>
         `
       });
+
+      // Update Google Sheet via SheetDB
+      try {
+        const sheetResponse = await fetch(
+          'https://sheetdb.io/api/v1/24lvcvb18iofv/Email/' +
+          encodeURIComponent(athlete_email),
+          {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              data: {
+                'Payment Status': 'Paid',
+                'Registration Type': 'Paid Package'
+              }
+            })
+          }
+        );
+        if (!sheetResponse.ok) {
+          const err = await sheetResponse.text();
+          console.error('SheetDB update error:', err);
+        } else {
+          console.log('SheetDB row updated for:', athlete_email);
+        }
+      } catch (sheetErr) {
+        console.error('SheetDB update failed:', sheetErr);
+      }
     } catch (emailErr) {
       console.error('Email error:', emailErr);
     }
