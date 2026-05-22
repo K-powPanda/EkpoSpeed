@@ -1768,6 +1768,12 @@
     trainingTypeSelect.addEventListener('change', updateAvailabilityOptions);
     updateAvailabilityOptions();
 
+    function isFreeSessionTraining(trainingType) {
+      const normalized = (trainingType || '').trim();
+      return normalized === "Small Group Training" ||
+        normalized === "Either (flexible)";
+    }
+
     async function handleSubmit() {
       // Required field validation
       const name = document.getElementById('f-name').value.trim();
@@ -1827,14 +1833,9 @@
       row["Availability"]      = availability;
       row["How Heard"]         = heard;
       row["Commitment"]        = commitment;
-      row["Registration Type"] =
-        (training === "Small Group Training" ||
-         training === "Either (flexible)")
-        ? "Free Session" : "Paid Package";
-      row["Payment Status"] =
-        (training === "Small Group Training" ||
-         training === "Either (flexible)")
-        ? "Pending Payment" : "Awaiting Payment";
+      const isFreeSessionRegistration = isFreeSessionTraining(training);
+      row["Registration Type"] = isFreeSessionRegistration ? "Free Session" : "Paid Package";
+      row["Payment Status"] = isFreeSessionRegistration ? "Pending Payment" : "Awaiting Payment";
 
       const payload = { data: [row] };
 
@@ -1877,16 +1878,17 @@
         const form = document.getElementById("reg-form");
         const register = document.getElementById("register");
         const oldSuccess = document.getElementById("success-state");
-        const isFreeSession =
-          training === "Small Group Training" ||
-          training === "Either (flexible)";
         form.style.opacity = "0";
         form.style.transition = "opacity 0.3s";
         setTimeout(async () => {
           form.style.display = "none";
           if (oldSuccess) oldSuccess.style.display = "none";
-          if (isFreeSession) {
-            register.insertAdjacentHTML('beforeend', `
+          if (isFreeSessionRegistration) {
+            const existingPicker = document.getElementById("package-picker");
+            if (existingPicker) existingPicker.style.display = "none";
+            let freeScreen = document.getElementById("free-session-screen");
+            if (!freeScreen) {
+              register.insertAdjacentHTML('beforeend', `
   <div id="free-session-screen" style="text-align:center;
        padding:40px 20px;max-width:600px;margin:0 auto;">
     <h2 style="font-family:'Barlow Condensed',sans-serif;
@@ -1942,7 +1944,10 @@
     </a>
   </div>
             `);
-            document.getElementById("free-session-screen").scrollIntoView({ behavior: "smooth", block: "center" });
+              freeScreen = document.getElementById("free-session-screen");
+            }
+            freeScreen.style.display = "block";
+            freeScreen.scrollIntoView({ behavior: "smooth", block: "center" });
             try {
               await fetch('/api/send-free-session-confirmation', {
                 method: 'POST',
@@ -1955,6 +1960,7 @@
             } catch (emailErr) {
               console.error('Free session email error:', emailErr);
             }
+            return;
           } else {
           register.insertAdjacentHTML('beforeend', `
             <div id="package-picker" style="text-align:center;padding:40px 20px;max-width:600px;margin:0 auto;">
