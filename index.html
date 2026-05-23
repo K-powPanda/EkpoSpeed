@@ -464,6 +464,141 @@
     }
     .schedule-off { color: var(--grey-dark); font-size: 0.8rem; }
 
+    /* ── SUMMER SCHEDULE ── */
+    #schedule {
+      background: var(--dark);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .summer-schedule-header {
+      text-align: center;
+      max-width: 720px;
+      margin: 0 auto 48px;
+    }
+    .summer-schedule-header .divider {
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .schedule-subheader {
+      color: var(--grey);
+      font-size: 1rem;
+      letter-spacing: 0.04em;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .calendar-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 22px;
+    }
+    .calendar-month {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 1.35rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 18px;
+      text-align: center;
+    }
+    .calendar-weekdays,
+    .calendar-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+    .calendar-weekdays span {
+      color: var(--grey);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+    .calendar-days { margin-top: 8px; }
+    .calendar-day {
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      color: var(--white);
+      font-size: 0.88rem;
+      font-weight: 600;
+      border-radius: 4px;
+    }
+    .calendar-day.training::after {
+      content: '';
+      position: absolute;
+      bottom: 5px;
+      width: 4px;
+      height: 4px;
+      background: #34C759;
+      border-radius: 50%;
+    }
+    .calendar-day.muted {
+      color: rgba(255,255,255,0.05);
+    }
+    .calendar-day.no-session {
+      background: rgba(255,94,0,0.16);
+      color: var(--orange);
+      text-decoration: line-through;
+    }
+    .calendar-day.last-day {
+      background: rgba(255,184,0,0.2);
+      border: 1px solid rgba(255,184,0,0.45);
+      color: var(--gold);
+      flex-direction: column;
+      gap: 1px;
+      font-weight: 800;
+    }
+    .calendar-day.last-day .last-day-label {
+      color: var(--gold);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.55rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      line-height: 1;
+    }
+    .schedule-legend {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+      flex-wrap: wrap;
+      margin: 34px auto 14px;
+      color: var(--grey);
+      font-size: 0.88rem;
+    }
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .legend-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .legend-dot.orange { background: var(--orange); }
+    .legend-dot.gold { background: var(--gold); }
+    .legend-dot.green { background: #34C759; }
+    .schedule-note {
+      max-width: 720px;
+      margin: 0 auto;
+      text-align: center;
+      color: var(--grey);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
     /* ── GAINS ── */
     #gains {
       background: var(--black);
@@ -1084,6 +1219,9 @@
       nav ul { display: none; }
       .mobile-nav-toggle { display: flex; align-items: center; justify-content: center; }
       .about-grid, .coach-grid { grid-template-columns: 1fr; gap: 40px; }
+      .calendar-grid { grid-template-columns: 1fr; }
+      .calendar-card { padding: 18px; }
+      .calendar-day { min-height: 36px; }
       .gains-grid { grid-template-columns: 1fr; }
       .pricing-grid { grid-template-columns: 1fr; }
       .form-grid { grid-template-columns: 1fr; }
@@ -1104,6 +1242,7 @@
     <div class="nav-logo">Ekpo<span>Speed</span></div>
     <ul>
       <li><a href="#about">About</a></li>
+      <li><a href="#schedule">Schedule</a></li>
       <li><a href="#gains">Training</a></li>
       <li><a href="#pricing">Pricing</a></li>
       <li><a href="#faq">FAQ</a></li>
@@ -1114,6 +1253,7 @@
   </nav>
   <div class="mobile-menu" id="mobile-menu">
     <a href="#about">About</a>
+    <a href="#schedule">Schedule</a>
     <a href="#gains">Training</a>
     <a href="#pricing">Pricing</a>
     <a href="#faq">FAQ</a>
@@ -1242,6 +1382,166 @@
           </div>
         </div>
       </div>
+    </div>
+  </section>
+
+  <!-- SUMMER SCHEDULE -->
+  <section id="schedule" class="reveal">
+    <div class="container">
+      <div class="summer-schedule-header">
+        <div class="section-label">Schedule</div>
+        <h2 class="section-title">SUMMER 2026 <span style="color:var(--orange)">SCHEDULE</span></h2>
+        <div class="divider"></div>
+        <p class="schedule-subheader">Fort Worth, TX &middot; Arlington Heights Track</p>
+      </div>
+
+      <div class="calendar-grid">
+        <div class="calendar-card">
+          <div class="calendar-month">June 2026</div>
+          <div class="calendar-weekdays">
+            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+          </div>
+          <div class="calendar-days">
+            <div class="calendar-day muted">31</div>
+            <div class="calendar-day training">1</div>
+            <div class="calendar-day training">2</div>
+            <div class="calendar-day training">3</div>
+            <div class="calendar-day training">4</div>
+            <div class="calendar-day training">5</div>
+            <div class="calendar-day">6</div>
+            <div class="calendar-day">7</div>
+            <div class="calendar-day training">8</div>
+            <div class="calendar-day no-session">9</div>
+            <div class="calendar-day no-session">10</div>
+            <div class="calendar-day no-session">11</div>
+            <div class="calendar-day no-session">12</div>
+            <div class="calendar-day no-session">13</div>
+            <div class="calendar-day no-session">14</div>
+            <div class="calendar-day no-session">15</div>
+            <div class="calendar-day no-session">16</div>
+            <div class="calendar-day no-session">17</div>
+            <div class="calendar-day no-session">18</div>
+            <div class="calendar-day no-session">19</div>
+            <div class="calendar-day no-session">20</div>
+            <div class="calendar-day">21</div>
+            <div class="calendar-day training">22</div>
+            <div class="calendar-day training">23</div>
+            <div class="calendar-day training">24</div>
+            <div class="calendar-day training">25</div>
+            <div class="calendar-day training">26</div>
+            <div class="calendar-day">27</div>
+            <div class="calendar-day">28</div>
+            <div class="calendar-day training">29</div>
+            <div class="calendar-day training">30</div>
+            <div class="calendar-day muted">1</div>
+            <div class="calendar-day muted">2</div>
+            <div class="calendar-day muted">3</div>
+            <div class="calendar-day muted">4</div>
+          </div>
+        </div>
+
+        <div class="calendar-card">
+          <div class="calendar-month">July 2026</div>
+          <div class="calendar-weekdays">
+            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+          </div>
+          <div class="calendar-days">
+            <div class="calendar-day muted">28</div>
+            <div class="calendar-day muted">29</div>
+            <div class="calendar-day muted">30</div>
+            <div class="calendar-day training">1</div>
+            <div class="calendar-day training">2</div>
+            <div class="calendar-day no-session">3</div>
+            <div class="calendar-day no-session">4</div>
+            <div class="calendar-day no-session">5</div>
+            <div class="calendar-day training">6</div>
+            <div class="calendar-day training">7</div>
+            <div class="calendar-day training">8</div>
+            <div class="calendar-day training">9</div>
+            <div class="calendar-day training">10</div>
+            <div class="calendar-day">11</div>
+            <div class="calendar-day">12</div>
+            <div class="calendar-day training">13</div>
+            <div class="calendar-day training">14</div>
+            <div class="calendar-day training">15</div>
+            <div class="calendar-day training">16</div>
+            <div class="calendar-day training">17</div>
+            <div class="calendar-day">18</div>
+            <div class="calendar-day">19</div>
+            <div class="calendar-day training">20</div>
+            <div class="calendar-day training">21</div>
+            <div class="calendar-day training">22</div>
+            <div class="calendar-day training">23</div>
+            <div class="calendar-day training">24</div>
+            <div class="calendar-day">25</div>
+            <div class="calendar-day">26</div>
+            <div class="calendar-day training">27</div>
+            <div class="calendar-day training">28</div>
+            <div class="calendar-day training">29</div>
+            <div class="calendar-day training">30</div>
+            <div class="calendar-day training">31</div>
+            <div class="calendar-day muted">1</div>
+          </div>
+        </div>
+
+        <div class="calendar-card">
+          <div class="calendar-month">August 2026</div>
+          <div class="calendar-weekdays">
+            <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+          </div>
+          <div class="calendar-days">
+            <div class="calendar-day muted">26</div>
+            <div class="calendar-day muted">27</div>
+            <div class="calendar-day muted">28</div>
+            <div class="calendar-day muted">29</div>
+            <div class="calendar-day muted">30</div>
+            <div class="calendar-day muted">31</div>
+            <div class="calendar-day">1</div>
+            <div class="calendar-day">2</div>
+            <div class="calendar-day training">3</div>
+            <div class="calendar-day training">4</div>
+            <div class="calendar-day training">5</div>
+            <div class="calendar-day training">6</div>
+            <div class="calendar-day training">7</div>
+            <div class="calendar-day last-day"><span>8</span><span class="last-day-label">Last Day</span></div>
+            <div class="calendar-day">9</div>
+            <div class="calendar-day">10</div>
+            <div class="calendar-day">11</div>
+            <div class="calendar-day">12</div>
+            <div class="calendar-day">13</div>
+            <div class="calendar-day">14</div>
+            <div class="calendar-day">15</div>
+            <div class="calendar-day">16</div>
+            <div class="calendar-day">17</div>
+            <div class="calendar-day">18</div>
+            <div class="calendar-day">19</div>
+            <div class="calendar-day">20</div>
+            <div class="calendar-day">21</div>
+            <div class="calendar-day">22</div>
+            <div class="calendar-day">23</div>
+            <div class="calendar-day">24</div>
+            <div class="calendar-day">25</div>
+            <div class="calendar-day">26</div>
+            <div class="calendar-day">27</div>
+            <div class="calendar-day">28</div>
+            <div class="calendar-day">29</div>
+            <div class="calendar-day">30</div>
+            <div class="calendar-day">31</div>
+            <div class="calendar-day muted">1</div>
+            <div class="calendar-day muted">2</div>
+            <div class="calendar-day muted">3</div>
+            <div class="calendar-day muted">4</div>
+            <div class="calendar-day muted">5</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="schedule-legend">
+        <span class="legend-item"><span class="legend-dot orange"></span>No in-person sessions</span>
+        <span class="legend-item"><span class="legend-dot gold"></span>Last day of program</span>
+        <span class="legend-item"><span class="legend-dot green"></span>Training day</span>
+      </div>
+      <p class="schedule-note">Students will receive an at-home/indoor training regimen for days we don't practice in person. We strive for consistency and a drive for growth no matter where we are.</p>
     </div>
   </section>
 
