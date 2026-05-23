@@ -3,12 +3,12 @@ import Stripe from 'stripe';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 const PRICE_MAP = {
-  'drop-in-1on1':        'price_1TYwRhIhyeCdMv4a9IX8D4zG',
-  'drop-in-group':       'price_1TYwT4IhyeCdMv4aQcxkpn1U',
-  '2month-1on1':         'price_1TYwUDIhyeCdMv4aNwvZ6g9X',
-  '2month-group':        'price_1TYwVBIhyeCdMv4aRcexH19L',
-  'summer-1on1':         'price_1TYwX7IhyeCdMv4aRK8ygk6Z',
-  'summer-group':        'price_1TYwY2IhyeCdMv4a8epuOlGW',
+  'drop-in-1on1':   'price_1Ta7kMEdo4Oe9eSdvupJO8Or',
+  'drop-in-group':  'price_1Ta7kJEdo4Oe9eSdhChpNcyN',
+  '2month-1on1':    'price_1Ta7kJEdo4Oe9eSdsQJ9nmub',
+  '2month-group':   'price_1Ta7kKEdo4Oe9eSdJwYlEMfr',
+  'summer-1on1':    'price_1Ta7kNEdo4Oe9eSd7Jb0Svd2',
+  'summer-group':   'price_1Ta7kMEdo4Oe9eSdg8uQyKPU',
 };
 
 export default async function handler(req, res) {
