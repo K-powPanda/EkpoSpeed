@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EKPO Speed Performance — Registration Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --black: #080808;
+      --dark: #111111;
+      --card: #161616;
+      --card2: #1c1c1c;
+      --orange: #FF5E00;
+      --orange-bright: #FF7A20;
+      --orange-dim: rgba(255,94,0,0.12);
+      --orange-border: rgba(255,94,0,0.3);
+      --gold: #FFB800;
+      --gold-dim: rgba(255,184,0,0.1);
+      --gold-border: rgba(255,184,0,0.25);
+      --white: #FFFFFF;
+      --grey: #AAAAAA;
+      --grey-dark: #333333;
+      --border: rgba(255,255,255,0.07);
+      --green: #22c55e;
+      --green-dim: rgba(34,197,94,0.1);
+      --red: #ef4444;
+      --red-dim: rgba(239,68,68,0.1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── TOP BAR ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 40px;
+      background: rgba(8,8,8,0.95);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px);
+    }
+
+    .header-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 1.35rem;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .header-logo span { color: var(--orange); }
+
+    .header-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--orange-dim);
+      border: 1px solid var(--orange-border);
+      color: var(--orange);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 2px;
+    }
+    .pulse-dot {
+      width: 6px; height: 6px;
+      background: var(--orange);
+      border-radius: 50%;
+      animation: pulse 1.5s ease infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.6); }
+    }
+
+    .header-meta {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--grey);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .logout-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--grey);
+      cursor: pointer;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 7px 12px;
+    }
+
+    .logout-btn:hover {
+      border-color: var(--orange-border);
+      color: var(--white);
+    }
+
+    /* ── MAIN LAYOUT ── */
+    main {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 36px 32px 60px;
+    }
+
+    /* ── PAGE TITLE ── */
+    .page-title {
+      margin-bottom: 32px;
+    }
+    .page-title h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+      line-height: 1;
+    }
+    .page-title h1 em {
+      font-style: normal;
+      color: var(--orange);
+    }
+    .page-title p {
+      color: var(--grey);
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+
+    /* ── SECTION LABEL ── */
+    .section-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── KPI GRID ── */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px;
+      margin-bottom: 36px;
+    }
+
+    .kpi-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 22px 24px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+      cursor: default;
+    }
+    .kpi-card:hover {
+      border-color: var(--orange-border);
+      transform: translateY(-2px);
+    }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+    }
+    .kpi-card.accent-orange::before { background: var(--orange); }
+    .kpi-card.accent-gold::before { background: var(--gold); }
+    .kpi-card.accent-green::before { background: var(--green); }
+    .kpi-card.accent-grey::before { background: var(--grey-dark); }
+
+    .kpi-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.72rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--grey);
+      margin-bottom: 10px;
+    }
+    .kpi-value {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 3rem;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .kpi-card.accent-orange .kpi-value { color: var(--orange); }
+    .kpi-card.accent-gold .kpi-value { color: var(--gold); }
+    .kpi-card.accent-green .kpi-value { color: var(--green); }
+    .kpi-card.accent-grey .kpi-value { color: var(--white); }
+
+    .kpi-sub {
+      font-size: 0.78rem;
+      color: var(--grey);
+    }
+
+    /* ── CHARTS GRID ── */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 18px;
+      margin-bottom: 36px;
+    }
+    @media (max-width: 1100px) {
+      .charts-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 720px) {
+      .charts-grid { grid-template-columns: 1fr; }
+    }
+
+    .chart-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 24px;
+      transition: border-color 0.2s;
+    }
+    .chart-card:hover { border-color: rgba(255,255,255,0.12); }
+    .chart-card.wide { grid-column: span 2; }
+    @media (max-width: 1100px) {
+      .chart-card.wide { grid-column: span 1; }
+    }
+
+    .chart-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--white);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .chart-title span {
+      font-weight: 700;
+      font-size: 0.7rem;
+      color: var(--grey);
+      letter-spacing: 0.1em;
+    }
+
+    .chart-wrap {
+      position: relative;
+      height: 200px;
+    }
+    .chart-wrap.tall { height: 240px; }
+
+    /* ── AVAILABILITY GRID ── */
+    .avail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .avail-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--card2);
+      border-radius: 3px;
+      border: 1px solid var(--border);
+      transition: border-color 0.2s;
+    }
+    .avail-row:hover { border-color: var(--orange-border); }
+    .avail-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.82rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--white);
+    }
+    .avail-count {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 900;
+      font-size: 1.4rem;
+      color: var(--orange);
+      min-width: 32px;
+      text-align: right;
+    }
+    .avail-bar {
+      width: 100%;
+      height: 3px;
+      background: var(--grey-dark);
+      border-radius: 2px;
+      margin-top: 6px;
+      overflow: hidden;
+    }
+    .avail-bar-fill {
+      height: 100%;
+      background: var(--orange);
+      border-radius: 2px;
+      transition: width 1s ease;
+    }
+
+    /* ── FULL AVAIL CARD ── */
+    .avail-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 24px;
+      margin-bottom: 36px;
+    }
+
+    /* ── PAYMENT / REGISTRATION ROW ── */
+    .bottom-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 18px;
+      margin-bottom: 36px;
+    }
+    @media (max-width: 900px) {
+      .bottom-row { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 580px) {
+      .bottom-row { grid-template-columns: 1fr; }
+    }
+
+    /* ── STAT LIST ── */
+    .stat-list { list-style: none; }
+    .stat-list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .stat-list li:last-child { border-bottom: none; }
+    .stat-list .s-label {
+      font-size: 0.85rem;
+      color: var(--grey);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .stat-list .s-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .stat-list .s-val {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: var(--white);
+    }
+    .tag {
+      display: inline-block;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 2px;
+    }
+    .tag-green { background: var(--green-dim); color: var(--green); }
+    .tag-orange { background: var(--orange-dim); color: var(--orange); }
+    .tag-gold { background: var(--gold-dim); color: var(--gold); }
+    .tag-red { background: var(--red-dim); color: var(--red); }
+    .tag-grey { background: rgba(255,255,255,0.06); color: var(--grey); }
+
+    /* ── ATHLETES TABLE ── */
+    .table-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 36px;
+    }
+    .table-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    .table-header h2 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 800;
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+    .table-search {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 7px 14px;
+      color: var(--white);
+      font-family: 'Barlow', sans-serif;
+      font-size: 0.82rem;
+      outline: none;
+      width: 220px;
+      transition: border-color 0.2s;
+    }
+    .table-search:focus { border-color: var(--orange-border); }
+    .table-search::placeholder { color: var(--grey-dark); }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    .data-table thead tr {
+      background: rgba(255,255,255,0.02);
+    }
+    .data-table th {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--grey);
+      padding: 10px 16px;
+      text-align: left;
+      white-space: nowrap;
+    }
+    .data-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      color: var(--grey);
+    }
+    .data-table tbody tr:hover { background: rgba(255,255,255,0.025); }
+    .data-table tbody tr:last-child td { border-bottom: none; }
+    .data-table .name-cell {
+      color: var(--white);
+      font-weight: 600;
+      font-size: 0.88rem;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 60px 24px;
+      color: var(--grey);
+    }
+    .empty-state .empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+    }
+    .empty-state p {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--grey);
+    }
+    .pagination-btns { display: flex; gap: 6px; }
+    .pagination-btns button {
+      background: var(--card2);
+      border: 1px solid var(--border);
+      color: var(--grey);
+      padding: 5px 12px;
+      border-radius: 2px;
+      cursor: pointer;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .pagination-btns button:hover:not(:disabled) { border-color: var(--orange-border); color: var(--orange); }
+    .pagination-btns button:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 32px;
+      border-top: 1px solid var(--border);
+      color: var(--grey-dark);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    footer span { color: var(--orange); }
+
+    /* ── LOCATION CARD ── */
+    .location-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 20px 24px;
+      margin-bottom: 36px;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .loc-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      flex: 1;
+      min-width: 200px;
+    }
+    .loc-icon {
+      background: var(--orange-dim);
+      border: 1px solid var(--orange-border);
+      color: var(--orange);
+      width: 36px; height: 36px;
+      border-radius: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .loc-text .loc-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: 0.68rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 3px;
+    }
+    .loc-text .loc-addr {
+      font-size: 0.82rem;
+      color: var(--grey);
+      line-height: 1.5;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 720px) {
+      main { padding: 24px 16px 48px; }
+      header { padding: 12px 20px; }
+      .header-meta { display: none; }
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 420px) {
+      .kpi-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-logo">Ekpo<span>Speed</span></div>
+  <div class="header-badge"><div class="pulse-dot"></div> Live Dashboard</div>
+  <div class="header-actions">
+    <div class="header-meta">Fort Worth, TX · Summer 2026</div>
+    <button class="logout-btn" type="button" onclick="logoutAdmin()">Logout</button>
+  </div>
+</header>
+
+<main>
+
+  <!-- PAGE TITLE -->
+  <div class="page-title">
+    <h1>Registration <em>Overview</em></h1>
+    <p>All athlete registrations — auto-populated from the ESP registration form.</p>
+  </div>
+
+  <!-- KPIs -->
+  <div class="section-label">Key Numbers</div>
+  <div class="kpi-grid" id="kpi-grid">
+    <div class="kpi-card accent-orange">
+      <div class="kpi-label">Total Athletes</div>
+      <div class="kpi-value" id="kpi-total">0</div>
+      <div class="kpi-sub">Registered this season</div>
+    </div>
+    <div class="kpi-card accent-gold">
+      <div class="kpi-label">1-on-1 Athletes</div>
+      <div class="kpi-value" id="kpi-11">0</div>
+      <div class="kpi-sub">Private training sessions</div>
+    </div>
+    <div class="kpi-card accent-grey">
+      <div class="kpi-label">Group Athletes</div>
+      <div class="kpi-value" id="kpi-group">0</div>
+      <div class="kpi-sub">Group training sessions</div>
+    </div>
+    <div class="kpi-card accent-green">
+      <div class="kpi-label">Fully Committed</div>
+      <div class="kpi-value" id="kpi-committed">0</div>
+      <div class="kpi-sub">Confirmed schedule</div>
+    </div>
+    <div class="kpi-card accent-orange">
+      <div class="kpi-label">Free Sessions</div>
+      <div class="kpi-value" id="kpi-free">0</div>
+      <div class="kpi-sub">Trial registrations</div>
+    </div>
+    <div class="kpi-card accent-gold">
+      <div class="kpi-label">Paid Packages</div>
+      <div class="kpi-value" id="kpi-paid">0</div>
+      <div class="kpi-sub">Paid registrations</div>
+    </div>
+  </div>
+
+  <!-- CHARTS ROW 1 -->
+  <div class="section-label">Athlete Breakdown</div>
+  <div class="charts-grid">
+
+    <!-- Sport -->
+    <div class="chart-card">
+      <div class="chart-title">Sport <span>Distribution</span></div>
+      <div class="chart-wrap">
+        <canvas id="sportChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Experience -->
+    <div class="chart-card">
+      <div class="chart-title">Experience <span>Level</span></div>
+      <div class="chart-wrap">
+        <canvas id="expChart"></canvas>
+      </div>
+    </div>
+
+    <!-- How Heard -->
+    <div class="chart-card">
+      <div class="chart-title">How They <span>Found Us</span></div>
+      <div class="chart-wrap">
+        <canvas id="hearChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Goals -->
+    <div class="chart-card wide">
+      <div class="chart-title">Training <span>Goals Interest</span></div>
+      <div class="chart-wrap tall">
+        <canvas id="goalsChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Health -->
+    <div class="chart-card">
+      <div class="chart-title">Health & <span>Clearance</span></div>
+      <div class="chart-wrap">
+        <canvas id="healthChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- AVAILABILITY -->
+  <div class="section-label">Schedule Demand</div>
+  <div class="avail-card">
+    <div class="chart-title" style="margin-bottom:16px;">Session Availability <span>Interest by Time Slot</span></div>
+    <div class="avail-grid" id="avail-grid"></div>
+  </div>
+
+  <!-- PAYMENT / REGISTRATION TYPE / COMMITMENT -->
+  <div class="section-label">Registration Status</div>
+  <div class="bottom-row">
+
+    <div class="chart-card" style="margin-bottom:0">
+      <div class="chart-title">Payment <span>Status</span></div>
+      <ul class="stat-list" id="payment-list"></ul>
+    </div>
+
+    <div class="chart-card" style="margin-bottom:0">
+      <div class="chart-title">Schedule <span>Commitment</span></div>
+      <ul class="stat-list" id="commitment-list"></ul>
+    </div>
+
+    <div class="chart-card" style="margin-bottom:0">
+      <div class="chart-title">Registration <span>Type</span></div>
+      <ul class="stat-list" id="regtype-list"></ul>
+    </div>
+
+  </div>
+
+  <!-- TRAINING LOCATIONS -->
+  <div class="section-label">Training Locations</div>
+  <div class="location-card">
+    <div class="loc-item">
+      <div class="loc-icon">📍</div>
+      <div class="loc-text">
+        <div class="loc-label">Primary Location</div>
+        <div class="loc-addr">Arlington Heights Track<br>4501 West Fwy, Fort Worth, TX 76107</div>
+      </div>
+    </div>
+    <div class="loc-item">
+      <div class="loc-icon">🏃</div>
+      <div class="loc-text">
+        <div class="loc-label">Backup Location</div>
+        <div class="loc-addr">Chisholm Trail HS Track<br>3100 NW College Dr, Fort Worth, TX 76179</div>
+      </div>
+    </div>
+    <div class="loc-item">
+      <div class="loc-icon">💸</div>
+      <div class="loc-text">
+        <div class="loc-label">Payment Info</div>
+        <div class="loc-addr">Cash App: $MicahEkpo39<br>Venmo: @MicahEkpo_39</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ATHLETE ROSTER TABLE -->
+  <div class="section-label">Athlete Roster</div>
+  <div class="table-card">
+    <div class="table-header">
+      <h2>Registered Athletes</h2>
+      <input class="table-search" id="table-search" type="text" placeholder="Search athletes…">
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Age</th>
+            <th>Sport</th>
+            <th>Training</th>
+            <th>Experience</th>
+            <th>Payment</th>
+            <th>Reg Type</th>
+          </tr>
+        </thead>
+        <tbody id="athlete-table-body"></tbody>
+      </table>
+    </div>
+    <div id="empty-state" class="empty-state" style="display:none;">
+      <div class="empty-icon">⚡</div>
+      <p>No athletes registered yet — check back once the form goes live.</p>
+    </div>
+    <div class="pagination" id="pagination" style="display:none;">
+      <span id="page-info"></span>
+      <div class="pagination-btns">
+        <button id="prev-btn" onclick="changePage(-1)">← Prev</button>
+        <button id="next-btn" onclick="changePage(1)">Next →</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <span>EKPO Speed Performance</span> · Registration Dashboard · Fort Worth, TX · Summer 2026
+</footer>
+
+<script>
+// ─── DATA LAYER ────────────────────────────────────────────────────────────────
+// ─── SAMPLE / FALLBACK DATA ───────────────────────────────────────────────────
+// This displays when no live data source is connected.
+// Each object maps to a row in the Registrations sheet.
+const SAMPLE_DATA = [
+  { 'Full Name':'Jordan Williams','Age':'16','Sports':'Football','Training Type':'Group','Experience':'Intermediate','Goals':'Speed, Agility','Availability':'Monday (Group 6PM), Saturday 9-10 AM','How Heard':'Instagram','Commitment':'Committed — I will be there every session','Registration Type':'Free Session','Payment Status':'Pending' },
+  { 'Full Name':'Marcus Davis','Age':'15','Sports':'Track','Training Type':'1-on-1','Experience':'Advanced','Goals':'Sprint Mechanics, Explosiveness','Availability':'Tuesday 6-7 PM, Thursday Group','How Heard':'Friend / Word of Mouth','Commitment':'Committed — I will be there every session','Registration Type':'Paid Package','Payment Status':'Paid' },
+  { 'Full Name':'Aaliyah Johnson','Age':'17','Sports':'Basketball','Training Type':'Group','Experience':'Beginner','Goals':'Speed, Conditioning, Overall Athleticism','Availability':'Saturday 10-11 AM, Friday 5-6 PM','How Heard':'TikTok','Commitment':'Need to discuss schedule','Registration Type':'Free Session','Payment Status':'Awaiting' },
+  { 'Full Name':'Darius Thompson','Age':'14','Sports':'Football','Training Type':'Group','Experience':'Beginner','Goals':'Agility, Speed','Availability':'Monday (Group 6PM)','How Heard':'Coach / Teacher Referral','Commitment':'Committed — I will be there every session','Registration Type':'Paid Package','Payment Status':'Paid' },
+  { 'Full Name':'Kyla Robinson','Age':'16','Sports':'Track','Training Type':'1-on-1','Experience':'Intermediate','Goals':'Sprint Mechanics, Speed','Availability':'Thursday Group, Tuesday 7-8 PM','How Heard':'Instagram','Commitment':'Committed — I will be there every session','Registration Type':'Paid Package','Payment Status':'Paid' },
+  { 'Full Name':'Tyler Moore','Age':'15','Sports':'Baseball','Training Type':'Group','Experience':'Beginner','Goals':'Explosiveness, Overall Athleticism','Availability':'Saturday 9-10 AM, Friday 6-7 PM','How Heard':'Flyer / Poster','Commitment':'Need to discuss schedule','Registration Type':'Free Session','Payment Status':'Pending' },
+  { 'Full Name':'Brianna Carter','Age':'17','Sports':'Soccer','Training Type':'Group','Experience':'Advanced','Goals':'Conditioning, Agility, Speed','Availability':'Tuesday 5-6 PM, Friday 7-8 PM','How Heard':'Friend / Word of Mouth','Commitment':'Committed — I will be there every session','Registration Type':'Paid Package','Payment Status':'Paid' },
+  { 'Full Name':'Devon Harris','Age':'13','Sports':'Football','Training Type':'Group','Experience':'Beginner','Goals':'Speed, Agility','Availability':'Monday (Group 6PM), Saturday 10-11 AM','How Heard':'Instagram','Commitment':'Committed — I will be there every session','Registration Type':'Free Session','Payment Status':'Awaiting' },
+];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let allAthletes = [];
+let filteredAthletes = [];
+let currentPage = 1;
+const PAGE_SIZE = 10;
+
+// ─── CHART INSTANCES ──────────────────────────────────────────────────────────
+let sportChart, expChart, hearChart, goalsChart, healthChart;
+
+// ─── COLOR PALETTE ────────────────────────────────────────────────────────────
+const PALETTE = {
+  orange: '#FF5E00',
+  gold: '#FFB800',
+  green: '#22c55e',
+  white: '#FFFFFF',
+  grey: '#555555',
+  red: '#ef4444',
+  teal: '#14b8a6',
+  purple: '#a78bfa',
+};
+const CHART_COLORS = [PALETTE.orange, PALETTE.gold, PALETTE.teal, PALETTE.purple, PALETTE.green, PALETTE.red, '#f472b6', '#60a5fa'];
+
+const chartDefaults = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: {
+      labels: {
+        color: '#AAAAAA',
+        font: { family: "'Barlow', sans-serif", size: 11 },
+        boxWidth: 10,
+        padding: 14,
+      }
+    },
+    tooltip: {
+      backgroundColor: '#1c1c1c',
+      borderColor: 'rgba(255,94,0,0.3)',
+      borderWidth: 1,
+      titleFont: { family: "'Barlow Condensed', sans-serif", weight: '700', size: 13 },
+      bodyFont: { family: "'Barlow', sans-serif", size: 12 },
+      titleColor: '#fff',
+      bodyColor: '#aaa',
+      padding: 12,
+    }
+  }
+};
+
+// ─── FETCH DATA ───────────────────────────────────────────────────────────────
+async function fetchData() {
+  try {
+    const res = await fetch('/api/admin/registrations', { credentials: 'include' });
+
+    if (res.status === 401) {
+      window.location.href = '/admin/login.html';
+      return [];
+    }
+
+    if (!res.ok) {
+      console.warn('Registration fetch failed.');
+      return [];
+    }
+
+    const json = await res.json();
+    return Array.isArray(json) ? json : [];
+  } catch(e) {
+    console.warn('Registration fetch failed.', e);
+  }
+  return [];
+}
+
+async function logoutAdmin() {
+  try {
+    await fetch('/api/admin/logout', { method: 'POST', credentials: 'include' });
+  } finally {
+    window.location.href = '/admin/login.html';
+  }
+}
+
+// ─── COUNT HELPERS ────────────────────────────────────────────────────────────
+function countField(data, field, value) {
+  return data.filter(r => (r[field] || '').toLowerCase().includes(value.toLowerCase())).length;
+}
+function groupByField(data, field) {
+  const counts = {};
+  data.forEach(r => {
+    const vals = (r[field] || 'Unknown').split(',').map(v => v.trim());
+    vals.forEach(v => { counts[v] = (counts[v] || 0) + 1; });
+  });
+  return counts;
+}
+function topN(obj, n=6) {
+  return Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,n);
+}
+
+// ─── INIT CHARTS ──────────────────────────────────────────────────────────────
+function initCharts(data) {
+  const total = data.length;
+
+  // — SPORT
+  const sports = groupByField(data, 'Sports');
+  const sportEntries = topN(sports, 5);
+  if (sportChart) sportChart.destroy();
+  sportChart = new Chart(document.getElementById('sportChart'), {
+    type: 'doughnut',
+    data: {
+      labels: sportEntries.map(e=>e[0]),
+      datasets: [{ data: sportEntries.map(e=>e[1]), backgroundColor: CHART_COLORS, borderColor: '#161616', borderWidth: 3 }]
+    },
+    options: { ...chartDefaults, cutout: '60%' }
+  });
+
+  // — EXPERIENCE
+  const exp = { Beginner: countField(data,'Experience','beginner'), Intermediate: countField(data,'Experience','intermediate'), Advanced: countField(data,'Experience','advanced') };
+  if (expChart) expChart.destroy();
+  expChart = new Chart(document.getElementById('expChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Beginner','Intermediate','Advanced'],
+      datasets: [{ data: Object.values(exp), backgroundColor: [PALETTE.teal, PALETTE.orange, PALETTE.gold], borderRadius: 3, barPercentage: 0.6 }]
+    },
+    options: { ...chartDefaults, plugins: { ...chartDefaults.plugins, legend: { display: false } }, scales: {
+      x: { ticks: { color: '#aaa', font: { family: "'Barlow Condensed'", size: 12 } }, grid: { display: false } },
+      y: { ticks: { color: '#aaa', font: { family: "'Barlow'", size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' }, beginAtZero: true }
+    }}
+  });
+
+  // — HOW HEARD
+  const heard = groupByField(data, 'How Heard');
+  const heardEntries = topN(heard, 5);
+  if (hearChart) hearChart.destroy();
+  hearChart = new Chart(document.getElementById('hearChart'), {
+    type: 'doughnut',
+    data: {
+      labels: heardEntries.map(e=>e[0]),
+      datasets: [{ data: heardEntries.map(e=>e[1]), backgroundColor: CHART_COLORS.slice(1), borderColor: '#161616', borderWidth: 3 }]
+    },
+    options: { ...chartDefaults, cutout: '60%' }
+  });
+
+  // — GOALS (horizontal bar)
+  const goalKeywords = ['Speed','Agility','Explosiveness','Sprint Mechanics','Conditioning','Overall Athleticism'];
+  const goalCounts = goalKeywords.map(g => ({label: g, count: data.filter(r=>(r['Goals']||'').includes(g)).length}));
+  goalCounts.sort((a,b)=>b.count-a.count);
+  if (goalsChart) goalsChart.destroy();
+  goalsChart = new Chart(document.getElementById('goalsChart'), {
+    type: 'bar',
+    data: {
+      labels: goalCounts.map(g=>g.label),
+      datasets: [{ data: goalCounts.map(g=>g.count), backgroundColor: CHART_COLORS, borderRadius: 3, barPercentage: 0.6 }]
+    },
+    options: { ...chartDefaults, indexAxis: 'y', plugins: { ...chartDefaults.plugins, legend: { display: false } }, scales: {
+      x: { ticks: { color: '#aaa', font: { family: "'Barlow'", size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' }, beginAtZero: true },
+      y: { ticks: { color: '#ddd', font: { family: "'Barlow Condensed'", weight:'700', size: 13 } }, grid: { display: false } }
+    }}
+  });
+
+  // — HEALTH
+  const hCleared = countField(data,'Cleared','yes');
+  const hRestrict = countField(data,'Cleared','restriction');
+  const hNot = data.length - hCleared - hRestrict;
+  if (healthChart) healthChart.destroy();
+  healthChart = new Chart(document.getElementById('healthChart'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Fully Cleared','Cleared w/ Restrictions','Not Yet Cleared'],
+      datasets: [{ data: [hCleared, hRestrict, hNot], backgroundColor: [PALETTE.green, PALETTE.gold, PALETTE.red], borderColor: '#161616', borderWidth: 3 }]
+    },
+    options: { ...chartDefaults, cutout: '60%' }
+  });
+}
+
+// ─── AVAILABILITY GRID ────────────────────────────────────────────────────────
+function renderAvailability(data) {
+  const slots = [
+    'Monday (Group 6PM)', 'Thursday Group',
+    'Saturday 9-10 AM', 'Saturday 10-11 AM',
+    'Tuesday 5-6 PM', 'Tuesday 6-7 PM',
+    'Tuesday 7-8 PM', 'Friday 5-6 PM',
+    'Friday 6-7 PM', 'Friday 7-8 PM'
+  ];
+  const counts = slots.map(s => ({ slot: s, count: data.filter(r => (r['Availability']||'').includes(s)).length }));
+  const max = Math.max(...counts.map(c=>c.count), 1);
+
+  const grid = document.getElementById('avail-grid');
+  grid.innerHTML = counts.map(c => `
+    <div class="avail-row">
+      <div>
+        <div class="avail-name">${c.slot}</div>
+        <div class="avail-bar"><div class="avail-bar-fill" style="width:${Math.round(c.count/max*100)}%"></div></div>
+      </div>
+      <div class="avail-count">${c.count}</div>
+    </div>
+  `).join('');
+}
+
+// ─── STAT LISTS ───────────────────────────────────────────────────────────────
+function renderStatList(id, items) {
+  document.getElementById(id).innerHTML = items.map(item => `
+    <li>
+      <span class="s-label"><span class="s-dot" style="background:${item.color}"></span>${item.label}</span>
+      <span class="s-val">${item.count}</span>
+    </li>
+  `).join('');
+}
+
+// ─── TABLE ────────────────────────────────────────────────────────────────────
+function payTag(status) {
+  const s = (status||'').toLowerCase();
+  if (s === 'paid') return `<span class="tag tag-green">Paid</span>`;
+  if (s === 'pending') return `<span class="tag tag-orange">Pending</span>`;
+  if (s === 'awaiting') return `<span class="tag tag-gold">Awaiting</span>`;
+  return `<span class="tag tag-grey">${status||'—'}</span>`;
+}
+function regTag(type) {
+  const t = (type||'').toLowerCase();
+  if (t.includes('paid')) return `<span class="tag tag-gold">Paid Package</span>`;
+  if (t.includes('free')) return `<span class="tag tag-teal" style="background:rgba(20,184,166,0.12);color:#14b8a6">Free Session</span>`;
+  return `<span class="tag tag-grey">${type||'—'}</span>`;
+}
+function trainingTag(type) {
+  const t = (type||'').toLowerCase();
+  if (t.includes('1-on-1') || t.includes('1on1')) return `<span class="tag tag-orange">1-on-1</span>`;
+  return `<span class="tag tag-grey">Group</span>`;
+}
+
+function renderTable() {
+  const tbody = document.getElementById('athlete-table-body');
+  const emptyState = document.getElementById('empty-state');
+  const pagination = document.getElementById('pagination');
+
+  if (filteredAthletes.length === 0) {
+    tbody.innerHTML = '';
+    emptyState.style.display = 'block';
+    pagination.style.display = 'none';
+    return;
+  }
+  emptyState.style.display = 'none';
+  pagination.style.display = 'flex';
+
+  const totalPages = Math.ceil(filteredAthletes.length / PAGE_SIZE);
+  currentPage = Math.max(1, Math.min(currentPage, totalPages));
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const slice = filteredAthletes.slice(start, start + PAGE_SIZE);
+
+  tbody.innerHTML = slice.map((r, i) => `
+    <tr>
+      <td>${start + i + 1}</td>
+      <td class="name-cell">${r['Full Name'] || '—'}</td>
+      <td>${r['Age'] || '—'}</td>
+      <td>${r['Sports'] || '—'}</td>
+      <td>${trainingTag(r['Training Type'])}</td>
+      <td>${r['Experience'] || '—'}</td>
+      <td>${payTag(r['Payment Status'])}</td>
+      <td>${regTag(r['Registration Type'])}</td>
+    </tr>
+  `).join('');
+
+  document.getElementById('page-info').textContent = `Showing ${start+1}–${Math.min(start+PAGE_SIZE, filteredAthletes.length)} of ${filteredAthletes.length} athletes`;
+  document.getElementById('prev-btn').disabled = currentPage === 1;
+  document.getElementById('next-btn').disabled = currentPage === totalPages;
+}
+
+function changePage(dir) {
+  currentPage += dir;
+  renderTable();
+}
+
+// ─── SEARCH ───────────────────────────────────────────────────────────────────
+document.getElementById('table-search').addEventListener('input', function() {
+  const q = this.value.toLowerCase();
+  filteredAthletes = allAthletes.filter(r =>
+    (r['Full Name']||'').toLowerCase().includes(q) ||
+    (r['Sports']||'').toLowerCase().includes(q) ||
+    (r['Training Type']||'').toLowerCase().includes(q) ||
+    (r['Experience']||'').toLowerCase().includes(q)
+  );
+  currentPage = 1;
+  renderTable();
+});
+
+// ─── MAIN INIT ────────────────────────────────────────────────────────────────
+async function init() {
+  const data = await fetchData();
+  allAthletes = data;
+  filteredAthletes = data;
+
+  // KPIs
+  document.getElementById('kpi-total').textContent = data.length;
+  document.getElementById('kpi-11').textContent = countField(data,'Training Type','1-on-1') + countField(data,'Training Type','1on1');
+  document.getElementById('kpi-group').textContent = countField(data,'Training Type','group');
+  document.getElementById('kpi-committed').textContent = data.filter(r=>(r['Commitment']||'').toLowerCase().includes('commit')).length;
+  document.getElementById('kpi-free').textContent = countField(data,'Registration Type','free');
+  document.getElementById('kpi-paid').textContent = countField(data,'Registration Type','paid');
+
+  // Charts
+  initCharts(data);
+
+  // Availability
+  renderAvailability(data);
+
+  // Stat lists
+  renderStatList('payment-list', [
+    { label: 'Paid', count: countField(data,'Payment Status','paid'), color: PALETTE.green },
+    { label: 'Pending', count: countField(data,'Payment Status','pending'), color: PALETTE.orange },
+    { label: 'Awaiting', count: countField(data,'Payment Status','awaiting'), color: PALETTE.gold },
+  ]);
+  renderStatList('commitment-list', [
+    { label: 'Committed', count: data.filter(r=>(r['Commitment']||'').toLowerCase().includes('commit')).length, color: PALETTE.green },
+    { label: 'Need to Discuss', count: data.filter(r=>(r['Commitment']||'').toLowerCase().includes('discuss')).length, color: PALETTE.gold },
+    { label: 'Undecided', count: data.filter(r=>{const c=(r['Commitment']||'').toLowerCase(); return !c.includes('commit')&&!c.includes('discuss');}).length, color: PALETTE.grey },
+  ]);
+  renderStatList('regtype-list', [
+    { label: 'Free Session', count: countField(data,'Registration Type','free'), color: PALETTE.teal },
+    { label: 'Paid Package', count: countField(data,'Registration Type','paid'), color: PALETTE.gold },
+  ]);
+
+  // Table
+  renderTable();
+}
+
+init();
+</script>
+</body>
+</html>

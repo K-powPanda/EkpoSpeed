@@ -1,5 +1,6 @@
 {
   "routes": [
+    { "src": "/admin/?", "dest": "/admin/index.html" },
     { "src": "/success", "dest": "/success.html" }
   ]
 }
